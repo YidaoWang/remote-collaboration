@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RemoteCollaboration.Util;
+using RemoteCollaboration.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,19 @@ namespace RemoteCollaboration.View
         public MainWindow()
         {
             InitializeComponent();
+            NavigationService.LoadCompleted += NavigationService_LoadCompleted;
+            NavigationService.Navigate(new Uri("View/Pages/StartupPage.xaml", UriKind.Relative), new StartupViewModel(NavigationService));
+        }
+
+        /// <summary>
+        /// Pageロード時の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NavigationService_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            // ViewModelをBinding
+            (e.Content as Page).DataContext = e.ExtraData;
         }
     }
 }

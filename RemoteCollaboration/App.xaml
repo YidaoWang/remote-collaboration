@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:RemoteCollaboration"
              StartupUri="View/MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="NormalButton" TargetType="Button">
+            <Setter Property="Width" Value="200"></Setter>
+            <Setter Property="Height" Value="80"></Setter>
+            <Setter Property="Background" Value="RoyalBlue"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="FontSize" Value="20"></Setter>
+        </Style>
     </Application.Resources>
 </Application>

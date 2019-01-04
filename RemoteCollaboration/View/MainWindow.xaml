@@ -6,5 +6,5 @@
         xmlns:local="clr-namespace:RemoteCollaboration.View"
         mc:Ignorable="d"
         Title="MainWindow" WindowState="Maximized" 
-        ShowsNavigationUI="False" Source="Pages.StartupPage.xaml">
+        ShowsNavigationUI="False">
 </NavigationWindow>

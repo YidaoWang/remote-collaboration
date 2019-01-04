@@ -12,17 +12,17 @@ namespace RemoteCollaboration.Util
         private Action<object> _execute;
         private Func<object, bool> _canExecute;
 
-        public DelegateCommand(Action<object> execute, Func<object, bool> canExecute)
+        public DelegateCommand(Action<object> execute, Func<object, bool> canExecute = null)
         {
             _execute = execute;
-            _canExecute = canExecute;
+            _canExecute = canExecute ?? (paramater => true);
         }
 
         public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {
-           return _canExecute(parameter);
+            return _canExecute(parameter);
         }
 
         public void Execute(object parameter)
