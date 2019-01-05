@@ -26,16 +26,20 @@ namespace RemoteCollaboration.View.Pages
         public CollaborationPage()
         {
             InitializeComponent();
+
             int n = 4;
+            var puzzle = new Piece[n, n];
             for (int i = 0; i < n; i++)
+            {
                 for (int j = 0; j < n; j++)
                 {
-                    var thumb = new Piece(i, j, n, new Uri("Images/01.jpeg", UriKind.Relative));
-                    MainCanvas.Children.Add(thumb);
-                    Canvas.SetLeft(thumb, 100 + i * 101);
-                    Canvas.SetTop(thumb, 100 + j * 101);
+                    var piece = new Piece(i, j, n, new Uri("Images/01.jpeg", UriKind.Relative), puzzle);
+                    puzzle[i, j] = piece;
+                    MainCanvas.Children.Add(piece);
+                    Canvas.SetLeft(piece, 100 + i * 101);
+                    Canvas.SetTop(piece, 100 + j * 101);
                 }
+            }
         }
-
     }
 }
