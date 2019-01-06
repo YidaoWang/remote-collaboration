@@ -7,9 +7,12 @@
       xmlns:local="clr-namespace:RemoteCollaboration.View.Pages"
       mc:Ignorable="d"    
       Height="800" Width="1280"
-      Title="CollaborationPage">
-    <Grid>
-        <Canvas x:Name="MainCanvas" Margin="10" Background="AliceBlue">
-        </Canvas>
+      Title="CollaborationPage" Loaded="Page_Loaded">
+    <Grid Background="AliceBlue">
+        <StackPanel>
+            <TextBlock FontSize="24" Text="{Binding Score, StringFormat=Score {0}}"></TextBlock>
+            <TextBlock FontSize="24" Text="{Binding Time, StringFormat=Time(Seconds) {0}}"></TextBlock>
+        </StackPanel>
+        <Canvas VerticalAlignment="Bottom" Height="{Binding CanvasHeight}" Width="{Binding CanvasWidth}" x:Name="MainCanvas" Margin="10"></Canvas>
     </Grid>
 </Page>

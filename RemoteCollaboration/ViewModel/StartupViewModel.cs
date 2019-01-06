@@ -20,6 +20,10 @@ namespace RemoteCollaboration.ViewModel
             StartCommand = new DelegateCommand(Start);
         }
 
+        /// <summary>
+        /// 開始コマンド
+        /// </summary>
+        /// <param name="paramater"></param>
         public void Start(object paramater)
         {
             Navigate(new Uri("View/Pages/CollaborationPage.xaml", UriKind.Relative), new CollaborationViewModel(NavigationService));

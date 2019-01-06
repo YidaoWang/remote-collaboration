@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              DragStarted="Thumb_DragStarted"
              DragCompleted="Thumb_DragCompleted"
-             DragDelta="Thumb_DragDelta"
+             DragDelta="Thumb_DragDelta"      
              Height="100" Width="100">
     <Thumb.Template>
         <ControlTemplate>

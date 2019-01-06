@@ -8,7 +8,7 @@
       mc:Ignorable="d" 
       Height="800" Width="1280"
       Title="StartupPage">
-    <Grid>
+    <Grid  Background="AliceBlue">
         <Button Style="{StaticResource NormalButton}" Command="{Binding StartCommand}"> 
             開始
         </Button>

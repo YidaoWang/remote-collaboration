@@ -73,6 +73,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Puzzle.cs" />
     <Compile Include="ViewModel\CollaborationViewModel.cs" />
     <Compile Include="ViewModel\StartupViewModel.cs" />
     <Compile Include="View\Controls\Piece.xaml.cs">
@@ -137,9 +138,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>
