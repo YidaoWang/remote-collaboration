@@ -1,15 +1,8 @@
 ﻿using RemoteCollaboration.Model;
-using RemoteCollaboration.Util;
 using RemoteCollaboration.View.Controls;
 using RemoteCollaboration.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace RemoteCollaboration.View.Pages
 {

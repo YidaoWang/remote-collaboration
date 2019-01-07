@@ -1,12 +1,8 @@
 ﻿using RemoteCollaboration.Model;
 using RemoteCollaboration.Util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
 
