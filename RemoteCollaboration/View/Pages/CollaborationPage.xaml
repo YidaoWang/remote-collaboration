@@ -9,9 +9,12 @@
       Height="800" Width="1280"
       Title="CollaborationPage" Loaded="Page_Loaded">
     <Grid Background="AliceBlue">
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Style="{StaticResource NormalButton}" Command="{Binding BackCommand}">
+            Back
+        </Button>
         <StackPanel>
-            <TextBlock FontSize="24" Text="{Binding Experiment.Score, StringFormat=Score {0}}"></TextBlock>
-            <TextBlock FontSize="24" Text="{Binding Experiment.Time, StringFormat=Time(Seconds) {0}}"></TextBlock>
+            <TextBlock FontSize="24" Text="{Binding Experiment.Score, StringFormat=Score: {0}}"></TextBlock>
+            <TextBlock FontSize="24" Text="{Binding Experiment.Time, StringFormat=Time(Seconds): {0}}"></TextBlock>
         </StackPanel>
         <Canvas VerticalAlignment="Bottom" Height="{Binding CanvasHeight}" Width="{Binding CanvasWidth}" x:Name="MainCanvas" Margin="10"></Canvas>
     </Grid>

@@ -20,7 +20,7 @@ namespace RemoteCollaboration.ViewModel
         public StartupViewModel(NavigationService navigation, Experiment exp = null) : base(navigation)
         {
             StartCommand = new DelegateCommand(Start);
-            Experiment = exp;
+            Experiment = exp ?? new Experiment();
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace RemoteCollaboration.ViewModel
         /// <param name="paramater"></param>
         public void Start(object paramater)
         {
-            Navigate(new Uri("View/Pages/CollaborationPage.xaml", UriKind.Relative), new CollaborationViewModel(NavigationService));
+            Navigate(new Uri("View/Pages/CollaborationPage.xaml", UriKind.Relative), new CollaborationViewModel(NavigationService, Experiment));
         }
     }
 }
