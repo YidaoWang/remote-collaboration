@@ -99,6 +99,7 @@ namespace RemoteCollaboration.View.Controls
             var border = Template.FindName("Thumb_Border", this) as Border;
             if (null != border)
             {
+                border.BorderBrush = new SolidColorBrush(Colors.Red);
                 border.BorderThickness = new Thickness(1);
             }
         }
@@ -112,6 +113,7 @@ namespace RemoteCollaboration.View.Controls
             var border = Template.FindName("Thumb_Border", this) as Border;
             if (null != border)
             {
+                border.BorderBrush = new SolidColorBrush(Colors.Blue);
                 border.BorderThickness = new Thickness(1);
             }
         }
@@ -126,26 +128,6 @@ namespace RemoteCollaboration.View.Controls
             if (null != border)
             {
                 border.BorderThickness = new Thickness(0);
-            }
-        }
-
-
-        /// <summary>
-        /// 結合
-        /// </summary>
-        /// <returns></returns>
-        public void Combin(Piece piece)
-        {
-            if (!CombiningPieces.Contains(piece))
-            {
-                CombiningPieces.AddRange(piece.CombiningPieces);
-                foreach (var p in CombiningPieces)
-                {
-                    p.CombiningPieces = CombiningPieces;
-                    var left = Canvas.GetLeft(this) + (p.I - I) * (Width + 1);
-                    var top = Canvas.GetTop(this) + (p.J - J) * (Height + 1);
-                    p.MoveTo(left, top);
-                }
             }
         }
 
@@ -165,18 +147,55 @@ namespace RemoteCollaboration.View.Controls
         {
             Canvas.SetLeft(this, x);
             Canvas.SetTop(this, y);
-            OnMove(this, x, y);
+            Moved(this, x, y);
         }
 
-        public delegate void MoveEventHander(Piece sender, double x, double y);
+        public delegate void MoveEventHandler(Piece sender, double x, double y);
+
+        public delegate void CombineEventHandler(Piece sender, Piece combine);
+
         /// <summary>
         /// ピース移動イベント
         /// </summary>
-        public event MoveEventHander OnMove;
+        public event MoveEventHandler Moved;
+
+        /// <summary>
+        /// 結合イベント
+        /// </summary>
+        public event CombineEventHandler Combined;
 
         private Piece[,] _puzzle;
         private double _lastLeft;
         private double _lastTop;
+
+        /// <summary>
+        /// 結合
+        /// </summary>
+        /// <returns></returns>
+        private void Combine(Piece piece)
+        {
+            if (!CombiningPieces.Contains(piece))
+            {
+                CombiningPieces.AddRange(piece.CombiningPieces);
+                foreach (var p in CombiningPieces)
+                {
+                    p.CombiningPieces = CombiningPieces;
+                    var left = Canvas.GetLeft(this) + (p.I - I) * (Width + 1);
+                    var top = Canvas.GetTop(this) + (p.J - J) * (Height + 1);
+                    p.MoveTo(left, top);
+                    p.SelectCancel();
+                }
+                Combined(this, piece);
+            }
+        }
+
+        /// <summary>
+        /// 結合失敗
+        /// </summary>
+        private void MissCombin()
+        {
+            Combined(this, null);
+        }
 
         /// <summary>
         /// 結合ピース全体のドラッグ開始処理
@@ -344,12 +363,12 @@ namespace RemoteCollaboration.View.Controls
                 }
                 if (canCombin)
                 {
-                    Combin(csp);
+                    Combine(csp);
                     break;
                 }
                 else
                 {
-                    // ミス
+                    MissCombin();
                     break;
                 }
             }

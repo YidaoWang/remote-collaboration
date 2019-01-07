@@ -1,4 +1,5 @@
-﻿using RemoteCollaboration.Util;
+﻿using RemoteCollaboration.Model;
+using RemoteCollaboration.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,13 @@ namespace RemoteCollaboration.ViewModel
     {
         #region Binding Properties
         public ICommand StartCommand { get; set; }
+        public Experiment Experiment { get; set; }
         #endregion
 
-        public StartupViewModel(NavigationService navigation) : base(navigation)
+        public StartupViewModel(NavigationService navigation, Experiment exp = null) : base(navigation)
         {
             StartCommand = new DelegateCommand(Start);
+            Experiment = exp;
         }
 
         /// <summary>

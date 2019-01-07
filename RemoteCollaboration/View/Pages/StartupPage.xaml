@@ -9,8 +9,16 @@
       Height="800" Width="1280"
       Title="StartupPage">
     <Grid  Background="AliceBlue">
+        <StackPanel>
+            <TextBlock HorizontalAlignment="Center" FontSize="80" Margin="50">
+                Remote Collaboration
+            </TextBlock>
+            <TextBlock FontSize="24" Text="{Binding Experiment.Score, StringFormat=Last Score {0}}"></TextBlock>
+            <TextBlock FontSize="24" Text="{Binding Experiment.Time, StringFormat=Last Time(Seconds) {0}}"></TextBlock>
+        </StackPanel>
+
         <Button Style="{StaticResource NormalButton}" Command="{Binding StartCommand}"> 
-            開始
+            Start
         </Button>
     </Grid>
 </Page>

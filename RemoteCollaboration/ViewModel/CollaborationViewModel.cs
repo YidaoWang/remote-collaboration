@@ -3,6 +3,8 @@ using RemoteCollaboration.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
@@ -11,23 +13,42 @@ namespace RemoteCollaboration.ViewModel
 {
     public class CollaborationViewModel : ViewModelBase
     {
-        #region Binding Properties
+        public Puzzle Puzzle { get; set; }
+        public Experiment Experiment { get; set; }
         public int CanvasWidth { get; set; }
         public int CanvasHeight { get; set; }
-        public int Score { get; set; }
-        public int Time { get; set; }
-
-        public Puzzle Puzzle { get; set; }
-        #endregion
 
         public CollaborationViewModel(NavigationService navigation) : base(navigation)
         {
-            Score = 0;
-            Time = 0;
             CanvasWidth = 1280;
             CanvasHeight = 650;
             Puzzle = new Puzzle(new Uri("Images/01.jpeg", UriKind.Relative), 400, 4, 5);
             Puzzle.RandomizePositions(CanvasWidth, CanvasHeight);
+
+            Experiment = new Experiment();
+            Observable.Interval(TimeSpan.FromMilliseconds(10), Scheduler.Default)
+                  .Subscribe(time =>
+                  {
+                      RaisePropertyChanged(nameof(Experiment));
+                  });
+            Experiment.Start();
+        }
+
+        public void Combined()
+        {
+            Experiment.Combined();
+            RaisePropertyChanged(nameof(Experiment));
+        }
+
+        public void MissCombined()
+        {
+            Experiment.MissCombined();
+            RaisePropertyChanged(nameof(Experiment));
+        }
+
+        public void Finish()
+        {
+            Navigate(new Uri("View/Pages/StartupPage.xaml", UriKind.Relative), new StartupViewModel(NavigationService, Experiment));
         }
     }
 }

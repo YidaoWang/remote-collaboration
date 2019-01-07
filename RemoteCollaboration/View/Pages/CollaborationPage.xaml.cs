@@ -50,7 +50,8 @@ namespace RemoteCollaboration.View.Pages
                 for (int j = 0; j < n; j++)
                 {
                     var piece = new Piece(i, j, n, puzzle.ImageUri, pieces);
-                    piece.OnMove += Piece_Moved;
+                    piece.Moved += Piece_Moved;
+                    piece.Combined += Piece_Combined;
                     pieces[i, j] = piece;
                     MainCanvas.Children.Add(piece);
                     Canvas.SetLeft(piece, puzzle.Positions[i, j].X);
@@ -68,6 +69,27 @@ namespace RemoteCollaboration.View.Pages
         private void Piece_Moved(Piece sender, double x, double y)
         {
             ViewModel.Puzzle.Positions[sender.I, sender.J] = new Point(x, y);
+        }
+
+        /// <summary>
+        /// ピースの結合を ViewModel に反映
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="combine"></param>
+        private void Piece_Combined(Piece sender, Piece combinePiece)
+        {
+            if (combinePiece != null)
+            {
+                ViewModel.Combined();
+                if(combinePiece.CombiningPieces.Count == sender.N * sender.N)
+                {
+                    ViewModel.Finish();
+                }
+            }
+            else
+            {
+                ViewModel.MissCombined();
+            }
         }
     }
 }
