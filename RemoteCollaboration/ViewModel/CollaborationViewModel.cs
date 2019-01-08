@@ -1,6 +1,7 @@
 ﻿using RemoteCollaboration.Model;
 using RemoteCollaboration.Util;
 using System;
+using System.ComponentModel;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -24,24 +25,18 @@ namespace RemoteCollaboration.ViewModel
             Puzzle = new Puzzle(new Uri("Images/01.jpeg", UriKind.Relative), 400, 4, 5);
             Puzzle.RandomizePositions(CanvasWidth, CanvasHeight);
             Experiment = exp;
-            Observable.Interval(TimeSpan.FromMilliseconds(10), Scheduler.Default)
-                  .Subscribe(time =>
-                  {
-                      RaisePropertyChanged(nameof(Experiment));
-                  });
+            Experiment.PropertyChanged += Experiment_PropertyChanged;
             Experiment.Start();
         }
 
         public void Combined()
         {
             Experiment.Combined();
-            RaisePropertyChanged(nameof(Experiment));
         }
 
         public void MissCombined()
         {
             Experiment.MissCombined();
-            RaisePropertyChanged(nameof(Experiment));
         }
 
         public void Finish()
@@ -52,6 +47,11 @@ namespace RemoteCollaboration.ViewModel
         private void Back(object paramater)
         {
             Navigate(new Uri("View/Pages/StartupPage.xaml", UriKind.Relative), new StartupViewModel(NavigationService));
+        }
+
+        private void Experiment_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(Experiment));
         }
     }
 }

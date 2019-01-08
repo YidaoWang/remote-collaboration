@@ -8,10 +8,8 @@ namespace RemoteCollaboration.ViewModel
 {
     public class StartupViewModel : ViewModelBase
     {
-        #region Binding Properties
         public ICommand StartCommand { get; set; }
         public Experiment Experiment { get; set; }
-        #endregion
 
         public StartupViewModel(NavigationService navigation, Experiment exp = null) : base(navigation)
         {
