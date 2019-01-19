@@ -10,6 +10,8 @@ namespace RemoteCollaboration.Model
         public int Score { get; set; }
         public int Time { get; set; }
 
+        private IDisposable _disposable;
+
         public Experiment()
         {
             Score = 0;
@@ -27,12 +29,17 @@ namespace RemoteCollaboration.Model
         {
             var now = DateTime.Now;
 
-            Observable.Interval(TimeSpan.FromMilliseconds(10), Scheduler.Default)
+            _disposable = Observable.Interval(TimeSpan.FromMilliseconds(10), Scheduler.Default)
                     .Subscribe(time =>
                     {
-                        Time = (DateTime.Now - now).Seconds;
+                        Time = (int)(DateTime.Now - now).TotalSeconds;
                         RaisePropertyChanged(nameof(Time));
                     });
+        }
+
+        public void Stop()
+        {
+            _disposable.Dispose();
         }
 
         public void Combined()

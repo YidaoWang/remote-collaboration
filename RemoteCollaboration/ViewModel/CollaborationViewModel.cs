@@ -23,30 +23,34 @@ namespace RemoteCollaboration.ViewModel
             CanvasHeight = 650;
             BackCommand = new DelegateCommand(Back);
             Puzzle = new Puzzle(new Uri("Images/01.jpeg", UriKind.Relative), 400, 4, 5);
+            Puzzle.Combined += Combined;
             Puzzle.RandomizePositions(CanvasWidth, CanvasHeight);
             Experiment = exp;
             Experiment.PropertyChanged += Experiment_PropertyChanged;
             Experiment.Start();
         }
 
-        public void Combined()
+        private void Combined(Piece sender, Piece combine)
         {
-            Experiment.Combined();
-        }
-
-        public void MissCombined()
-        {
-            Experiment.MissCombined();
+            if (combine != null)
+            {
+                Experiment.Combined();
+            }
+            else
+            {
+                Experiment.MissCombined();
+            }
         }
 
         public void Finish()
         {
-            Navigate(new Uri("View/Pages/StartupPage.xaml", UriKind.Relative), new StartupViewModel(NavigationService, Experiment));
+            Experiment.Stop();
+            Navigate("Startup", new StartupViewModel(NavigationService, Experiment));
         }
 
         private void Back(object paramater)
         {
-            Navigate(new Uri("View/Pages/StartupPage.xaml", UriKind.Relative), new StartupViewModel(NavigationService));
+            Navigate("Startup", new StartupViewModel(NavigationService));
         }
 
         private void Experiment_PropertyChanged(object sender, PropertyChangedEventArgs e)

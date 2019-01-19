@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using static RemoteCollaboration.Model.Piece;
 
 namespace RemoteCollaboration.Model
 {
@@ -13,7 +14,14 @@ namespace RemoteCollaboration.Model
             PuzzleSize = puzzleSize;
             N = n;
             PieceMargin = blockMargin;
-            Positions = new Point[N, N];
+            Pieces = new Piece[N, N];
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    Pieces[i, j] = new Piece(this, i, j);
+                }
+            }
         }
 
         /// <summary>
@@ -42,10 +50,31 @@ namespace RemoteCollaboration.Model
                 return PuzzleSize / N;
             }
         }
+ 
         /// <summary>
-        /// ピースの左上座標
+        /// 全ピースへの参照
         /// </summary>
-        public Point[,] Positions { get; set; }
+        public Piece[,] Pieces { get; set; }
+
+        /// <summary>
+        /// 結合イベント
+        /// </summary>
+        public event CombineEventHandler Combined {
+            add
+            {
+                foreach(var p in Pieces)
+                {
+                    p.Combined += value;
+                }
+            }
+            remove
+            {
+                foreach (var p in Pieces)
+                {
+                    p.Combined -= value;
+                }
+            }
+        }
 
         /// <summary>
         /// 初期位置をランダム生成
@@ -62,9 +91,8 @@ namespace RemoteCollaboration.Model
             {
                 for (int j = 0; j < N; j++)
                 {
-                    var left = randList[i * N + j] % maxColumn * length;
-                    var top = randList[i * N + j] / maxColumn * length;
-                    Positions[i, j] = new Point(left, top);
+                    Pieces[i, j].Left = randList[i * N + j] % maxColumn * length;
+                    Pieces[i, j].Top = randList[i * N + j] / maxColumn * length;
                 }
             }
         }

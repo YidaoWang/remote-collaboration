@@ -1,73 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace RemoteCollaboration.View.Controls
+namespace RemoteCollaboration.Model
 {
-    /// <summary>
-    /// Piece.xaml の相互作用ロジック
-    /// </summary>
-    public partial class Piece : Thumb
+    public class Piece
     {
-        public static readonly DependencyProperty ImageSourceProperty =
-            DependencyProperty.Register("Source", typeof(ImageSource), typeof(Piece));
+        private double _lastLeft;
+        private double _lastTop;
+        public Puzzle _puzzle;
 
-        /// <summary>
-        /// パズルピースのコンストラクタ
-        /// </summary>
-        /// <param name="i">行番号</param>
-        /// <param name="j">列番号</param>
-        /// <param name="n">行数</param>
-        /// <param name="path">画像URI</param>
-        /// <param name="puzzle">他ピースへの参照</param>
-        public Piece(int i, int j, int n, Uri path, Piece[,] puzzle)
+        public Piece(Puzzle puzzle, int i, int j)
         {
-            InitializeComponent();
+            _puzzle = puzzle;
             CombiningPieces = new List<Piece>();
             CombiningPieces.Add(this);
             I = i;
             J = j;
-            N = n;
-            var image = new BitmapImage(path);
-            var width = (int)image.Width / n;
-            var height = (int)image.Height / n;
-            var rect = new Int32Rect(i * width, j * height, width, height);
+            var image = new BitmapImage(puzzle.ImageUri);
+            Width = (int)image.Width / puzzle.N;
+            Height = (int)image.Height / puzzle.N;
+            var rect = new Int32Rect(i * Width, j * Height, Width, Height);
             ImageSource = new CroppedBitmap(image, rect);
-            _puzzle = puzzle;
         }
 
         /// <summary>
-        /// 画像ソース
+        /// イメージソース
         /// </summary>
-        public ImageSource ImageSource
-        {
-            get { return (ImageSource)GetValue(ImageSourceProperty); }
-            set { SetValue(ImageSourceProperty, value); }
-        }
-
+        public ImageSource ImageSource { get; set; }
         /// <summary>
         /// 結合しているピース（自身を含む）
         /// </summary>
         public List<Piece> CombiningPieces { get; set; }
-
         /// <summary>
         /// 行番号
         /// </summary>
         public int I { get; private set; }
-
         /// <summary>
         /// 列番号
         /// </summary>
         public int J { get; private set; }
 
         /// <summary>
-        /// 行数
+        /// x座標
         /// </summary>
-        public int N { get; private set; }
+        public double Left { get; set; }
+        /// <summary>
+        /// y座標
+        /// </summary>
+        public double Top { get; set; }
+        /// <summary>
+        /// 高さ
+        /// </summary>
+        public int Height { get; set; }
+        /// <summary>
+        /// 幅
+        /// </summary>
+        public int Width { get; set; }
+        
+
+        /// <summary>
+        /// ピース移動イベント
+        /// </summary>
+        public delegate void MoveEventHandler(Piece sender, double left, double top);
+        public event MoveEventHandler Moved;
+
+        /// <summary>
+        /// 選択変化イベント
+        /// </summary>
+        public delegate void SelectionChangeEventHandler(Piece sender, EnumSelectedState selectedState);
+        public event SelectionChangeEventHandler SelectionChanged;
+
+        /// <summary>
+        /// 結合イベント
+        /// </summary>
+        public delegate void CombineEventHandler(Piece sender, Piece combine);
+        public event CombineEventHandler Combined;
+
 
         /// <summary>
         /// 選択状態
@@ -80,18 +94,14 @@ namespace RemoteCollaboration.View.Controls
         }
         public EnumSelectedState SelectedState { get; set; }
 
+
         /// <summary>
         /// 選択
         /// </summary>
         public void Select()
         {
             SelectedState = EnumSelectedState.Selected;
-            var border = Template.FindName("Thumb_Border", this) as Border;
-            if (null != border)
-            {
-                border.BorderBrush = new SolidColorBrush(Colors.Red);
-                border.BorderThickness = new Thickness(1);
-            }
+            SelectionChanged(this, SelectedState);
         }
 
         /// <summary>
@@ -100,12 +110,7 @@ namespace RemoteCollaboration.View.Controls
         public void CollaboraterSelect()
         {
             SelectedState = EnumSelectedState.CollaboraterSelected;
-            var border = Template.FindName("Thumb_Border", this) as Border;
-            if (null != border)
-            {
-                border.BorderBrush = new SolidColorBrush(Colors.Blue);
-                border.BorderThickness = new Thickness(1);
-            }
+            SelectionChanged(this, SelectedState);
         }
 
         /// <summary>
@@ -114,11 +119,17 @@ namespace RemoteCollaboration.View.Controls
         public void SelectCancel()
         {
             SelectedState = EnumSelectedState.NotSelected;
-            var border = Template.FindName("Thumb_Border", this) as Border;
-            if (null != border)
-            {
-                border.BorderThickness = new Thickness(0);
-            }
+            SelectionChanged(this, SelectedState);
+        }
+
+        /// <summary>
+        /// 移動
+        /// </summary>
+        public void MoveTo(double left, double top)
+        {
+            Left = left;
+            Top = top;
+            Moved(this, left, top);
         }
 
         /// <summary>
@@ -130,69 +141,11 @@ namespace RemoteCollaboration.View.Controls
         }
 
         /// <summary>
-        /// 移動
-        /// </summary>
-        /// <param name="left"></param>
-        public void MoveTo(double x, double y)
-        {
-            Canvas.SetLeft(this, x);
-            Canvas.SetTop(this, y);
-            Moved(this, x, y);
-        }
-
-        public delegate void MoveEventHandler(Piece sender, double x, double y);
-
-        public delegate void CombineEventHandler(Piece sender, Piece combine);
-
-        /// <summary>
-        /// ピース移動イベント
-        /// </summary>
-        public event MoveEventHandler Moved;
-
-        /// <summary>
-        /// 結合イベント
-        /// </summary>
-        public event CombineEventHandler Combined;
-
-        private Piece[,] _puzzle;
-        private double _lastLeft;
-        private double _lastTop;
-
-        /// <summary>
-        /// 結合
-        /// </summary>
-        /// <returns></returns>
-        private void Combine(Piece piece)
-        {
-            if (!CombiningPieces.Contains(piece))
-            {
-                CombiningPieces.AddRange(piece.CombiningPieces);
-                foreach (var p in CombiningPieces)
-                {
-                    p.CombiningPieces = CombiningPieces;
-                    var left = Canvas.GetLeft(this) + (p.I - I) * (Width + 1);
-                    var top = Canvas.GetTop(this) + (p.J - J) * (Height + 1);
-                    p.MoveTo(left, top);
-                    p.SelectCancel();
-                }
-                Combined(this, piece);
-            }
-        }
-
-        /// <summary>
-        /// 結合失敗
-        /// </summary>
-        private void MissCombin()
-        {
-            Combined(this, null);
-        }
-
-        /// <summary>
         /// 結合ピース全体のドラッグ開始処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Thumb_DragStarted(object sender, DragStartedEventArgs e)
+        public void DragStarted()
         {
             switch (SelectedState)
             {
@@ -200,7 +153,7 @@ namespace RemoteCollaboration.View.Controls
                     var isSelected = false;
                     var isColSelected = false;
                     Piece selected = null;
-                    foreach (var piece in _puzzle)
+                    foreach (var piece in _puzzle.Pieces)
                     {
                         if (piece.SelectedState == EnumSelectedState.Selected)
                         {
@@ -250,23 +203,14 @@ namespace RemoteCollaboration.View.Controls
             var tmp = CombiningPieces.ToArray();
             foreach (var piece in tmp)
             {
-                piece.OnDragStarted();
+                piece.EachDragStarted();
             }
-        }
-
-        /// <summary>
-        /// 個々のドラッグ開始処理
-        /// </summary>
-        private void OnDragStarted()
-        {
-            _lastLeft = Canvas.GetLeft(this);
-            _lastTop = Canvas.GetTop(this);
         }
 
         /// <summary>
         /// 結合ピース全体のドラッグ完了処理
         /// </summary>
-        private void Thumb_DragCompleted(object sender, DragCompletedEventArgs e)
+        public void DragCompleted()
         {
             var tmp = CombiningPieces.ToArray();
             var complete = true;
@@ -282,7 +226,7 @@ namespace RemoteCollaboration.View.Controls
             {
                 foreach (var piece in tmp)
                 {
-                    piece.OnDragCompleted();
+                    piece.EachDragCompleted();
                 }
             }
             else
@@ -295,25 +239,43 @@ namespace RemoteCollaboration.View.Controls
         }
 
         /// <summary>
+        /// 結合ピース全体のドラッグ中処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DragDelta(double horizontalChange, double verticalChange, double canvasWidth, double canvasHeight)
+        {
+            var tmp = CombiningPieces.ToArray();
+            foreach (var piece in tmp)
+            {
+                piece.EachDragDelta(horizontalChange, verticalChange, canvasWidth, canvasHeight);
+            }
+        }
+
+        /// <summary>
+        /// 個々のドラッグ開始処理
+        /// </summary>
+        private void EachDragStarted()
+        {
+            _lastLeft = Left;
+            _lastTop = Top;
+        }
+
+        /// <summary>
         /// 個々のドラッグ完了可能判定
         /// </summary>
         private bool CanCompletDrag()
         {
-            var x = Canvas.GetLeft(this);
-            var y = Canvas.GetTop(this);
-
             // ドロップした際にピースが重ならないように
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < _puzzle.N; i++)
             {
-                for (int j = 0; j < N; j++)
+                for (int j = 0; j < _puzzle.N; j++)
                 {
                     if (i != I || j != J)
                     {
-                        var piece = _puzzle[i, j];
-                        var px = Canvas.GetLeft(piece);
-                        var py = Canvas.GetTop(piece);
-                        if (x < px + piece.Width && px + piece.Width < x + Width + piece.Width
-                            && y < py + piece.Height && py + piece.Height < y + Height + piece.Height)
+                        var piece = _puzzle.Pieces[i, j];
+                        if (Left < piece.Left + piece.Width && piece.Left + piece.Width < Left + Width + piece.Width
+                            && Top < piece.Top + piece.Height && piece.Top + piece.Height < Top + Height + piece.Height)
                         {
                             return false;
                         }
@@ -326,11 +288,8 @@ namespace RemoteCollaboration.View.Controls
         /// <summary>
         /// 個々のドラッグ完了処理
         /// </summary>
-        private void OnDragCompleted()
+        private void EachDragCompleted()
         {
-            var x = Canvas.GetLeft(this);
-            var y = Canvas.GetTop(this);
-
             foreach (var csp in CollaboraterSelectedPieces)
             {
                 var canCombin = false;
@@ -365,13 +324,60 @@ namespace RemoteCollaboration.View.Controls
         }
 
         /// <summary>
+        /// 個々のドラッグ中処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EachDragDelta(double horizontalChange, double verticalChange, double canvasWidth, double canvasHeight)
+        {
+            var x = Left + horizontalChange;
+            var y = Top + verticalChange;
+
+            x = Math.Max(x, 0);
+            y = Math.Max(y, 0);
+            x = Math.Min(x, canvasWidth - Width);
+            y = Math.Min(y, canvasHeight - Height);
+
+            MoveTo(x, y);
+        }
+
+        /// <summary>
+        /// 結合
+        /// </summary>
+        /// <returns></returns>
+        private void Combine(Piece piece)
+        {
+            if (!CombiningPieces.Contains(piece))
+            {
+                CombiningPieces.AddRange(piece.CombiningPieces);
+                foreach (var p in CombiningPieces)
+                {
+                    p.CombiningPieces = CombiningPieces;
+                    var left = Left + (p.I - I) * (Width + 1);
+                    var top = Top + (p.J - J) * (Height + 1);
+                    p.MoveTo(left, top);
+                    p.SelectCancel();
+                }
+            }
+            Combined(this, piece);
+        }
+
+        /// <summary>
+        /// 結合失敗
+        /// </summary>
+        private void MissCombin()
+        {
+            Combined(this, null);
+        }
+
+        /// <summary>
         /// コラボレーターの選択しているピースを返す
         /// </summary>
         private List<Piece> CollaboraterSelectedPieces
         {
             get
             {
-                foreach (var p in _puzzle)
+                foreach (var p in _puzzle.Pieces)
                 {
                     if (p.SelectedState == EnumSelectedState.CollaboraterSelected)
                     {
@@ -379,45 +385,6 @@ namespace RemoteCollaboration.View.Controls
                     }
                 }
                 return new List<Piece>();
-            }
-        }
-
-        /// <summary>
-        /// 結合ピース全体のドラッグ中処理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Thumb_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            var tmp = CombiningPieces.ToArray();
-            foreach (var piece in tmp)
-            {
-                piece.OnDragDelta(piece, e);
-            }
-        }
-
-        /// <summary>
-        /// 個々のドラッグ中処理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnDragDelta(object sender, DragDeltaEventArgs e)
-        {
-            var piece = sender as Piece;
-            if (null != piece)
-            {
-                var x = Canvas.GetLeft(piece) + e.HorizontalChange;
-                var y = Canvas.GetTop(piece) + e.VerticalChange;
-
-                var canvas = piece.Parent as Canvas;
-                if (null != canvas)
-                {
-                    x = Math.Max(x, 0);
-                    y = Math.Max(y, 0);
-                    x = Math.Min(x, canvas.ActualWidth - piece.ActualWidth);
-                    y = Math.Min(y, canvas.ActualHeight - piece.ActualHeight);
-                }
-                piece.MoveTo(x, y);
             }
         }
 
@@ -440,19 +407,19 @@ namespace RemoteCollaboration.View.Controls
         /// </returns>
         private int GetCombinEdge(Piece a, Piece b)
         {
-            if (CanCombin(Canvas.GetLeft(a), Canvas.GetTop(a), Canvas.GetLeft(b) + b.Width, Canvas.GetTop(b)))
+            if (CanCombin(a.Left, a.Top, b.Left + b.Width, b.Top))
             {
                 return 0;
             }
-            if (CanCombin(Canvas.GetLeft(a), Canvas.GetTop(a), Canvas.GetLeft(b), Canvas.GetTop(b) + b.Height))
+            if (CanCombin(a.Left, a.Top, b.Left, b.Top + b.Height))
             {
                 return 1;
             }
-            if (CanCombin(Canvas.GetLeft(a) + a.Width, Canvas.GetTop(a), Canvas.GetLeft(b), Canvas.GetTop(b)))
+            if (CanCombin(a.Left + a.Width, a.Top, b.Left, b.Top))
             {
                 return 2;
             }
-            if (CanCombin(Canvas.GetLeft(a), Canvas.GetTop(a) + a.Height, Canvas.GetLeft(b), Canvas.GetTop(b)))
+            if (CanCombin(a.Left, a.Top + a.Height, b.Left, b.Top))
             {
                 return 3;
             }

@@ -23,7 +23,7 @@ namespace RemoteCollaboration.ViewModel
         /// <param name="paramater"></param>
         public void Start(object paramater)
         {
-            Navigate(new Uri("View/Pages/CollaborationPage.xaml", UriKind.Relative), new CollaborationViewModel(NavigationService, Experiment));
+            Navigate("Collaboration", new CollaborationViewModel(NavigationService, Experiment));
         }
     }
 }

@@ -89,11 +89,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Experiment.cs" />
+    <Compile Include="Model\Piece.cs" />
     <Compile Include="Model\Puzzle.cs" />
+    <Compile Include="Util\PageSelector.cs" />
     <Compile Include="ViewModel\CollaborationViewModel.cs" />
+    <Compile Include="ViewModel\PieceViewModel.cs" />
     <Compile Include="ViewModel\StartupViewModel.cs" />
-    <Compile Include="View\Controls\Piece.xaml.cs">
-      <DependentUpon>Piece.xaml</DependentUpon>
+    <Compile Include="View\Controls\PieceControle.xaml.cs">
+      <DependentUpon>PieceControle.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Pages\CollaborationPage.xaml.cs">
       <DependentUpon>CollaborationPage.xaml</DependentUpon>
@@ -101,7 +104,7 @@
     <Compile Include="View\Pages\StartupPage.xaml.cs">
       <DependentUpon>StartupPage.xaml</DependentUpon>
     </Compile>
-    <Page Include="View\Controls\Piece.xaml">
+    <Page Include="View\Controls\PieceControle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

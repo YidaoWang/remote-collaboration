@@ -20,9 +20,9 @@ namespace RemoteCollaboration.Util
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected void Navigate(Uri source, object navigationState)
+        protected void Navigate(string pageKey, object navigationState)
         {
-            NavigationService.Navigate(source, navigationState);
+            NavigationService.Navigate(PageSelector.PageDictionary[pageKey], navigationState);
         }
     }
 }
